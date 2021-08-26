@@ -23,18 +23,20 @@ class Snake:
         self.points = 0
 
     def change_directions(self, state):
-        if (self.state == "left" and state == "right") or (self.state == "right" and state == "left") or (self.state == "up" and state == "down") or (self.state == "down" and state == "up"):
+        # directions = ["left", "right", "up", "down"]
+        # left is 0, right is 1, up is 2, down is 3
+        if (self.state == 0 and state == 1) or (self.state == 1 and state == 0) or (self.state == 2 and state == 3) or (self.state == 3 and state == 2):
             return
         self.state = state
 
     def move(self):
-        if self.state == "left":
+        if self.state == 0:
             self.x -= 1
-        elif self.state == "right":
+        elif self.state == 1:
             self.x += 1
-        elif self.state == "up":
+        elif self.state == 2:
             self.y -= 1
-        elif self.state == "down":
+        elif self.state == 3:
             self.y += 1
         else:
             return
@@ -44,7 +46,7 @@ class Snake:
         self.points += 1
 
         if self.eat():
-            self.points += 10
+            self.points += 100
             self.food.relocate()
             return
 
@@ -61,7 +63,7 @@ class Snake:
             pygame.draw.rect(screen, (77, 237, 48), segment)
 
     def dead(self):
-        punishment = 17
+        punishment = 150
 
         if self.x < 0 or self.x >= grid_width or self.y < 0 or self.y >= grid_height:
             self.points -= punishment
@@ -88,7 +90,7 @@ class Snake:
             for y_dir in range(-1, 2):
                 if x_dir == 0 and y_dir == 0:
                     continue
-                observations.append(self.observe_direction(x_dir, y_dir))
+                observations += self.observe_direction(x_dir, y_dir)
 
         return observations
 
@@ -119,14 +121,14 @@ class Snake:
                         body_hit = True
                         break
 
-        return (dist_food, dist_wall, dist_body)
+        return [dist_food, dist_wall, dist_body]
 
 class Food:
     def __init__(self, grid_width, grid_height):
         self.grid_width = grid_width
         self.grid_height = grid_height
-        self.x = random.randint(0, self.grid_width)
-        self.y = random.randint(0, self.grid_height)
+        self.x = random.randint(0, self.grid_width - 1)
+        self.y = random.randint(0, self.grid_height - 1)
         self.width = 9
         self.height = 9
         self.rect = pygame.Rect(self.x * 10 + 1, self.y * 10 + 1, self.width, self.height)
@@ -135,7 +137,6 @@ class Food:
         self.x = random.randint(0, self.grid_width - 1)
         self.y = random.randint(0, self.grid_height - 1)
         self.rect = pygame.Rect(self.x * 10 + 1, self.y * 10 + 1, self.width, self.height)
-        print(self.x, self.y)
 
     def draw(self):
         pygame.draw.rect(screen, (218, 165, 32), self.rect)
@@ -154,8 +155,7 @@ def play_game(snake):
                 if event.key == pygame.K_q:
                     running = False
 
-        directions = ["left", "right", "up", "down"]
-        snake.change_directions(directions[random.randint(0, 3)])
+        snake.change_directions(random.randint(0, 3))
         # player.change_directions("right")
 
         snake.move()

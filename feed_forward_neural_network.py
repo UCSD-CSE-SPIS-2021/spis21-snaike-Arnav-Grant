@@ -3,13 +3,13 @@
 
 import numpy as np
 
-n_x = 7
+n_x = 24
 n_h = 9
 n_h2 = 15
-n_y = 3
-W1_shape = (9,7)
-W2_shape = (15,9)
-W3_shape = (3,15)
+n_y = 4
+W1_shape = (n_h,n_x)
+W2_shape = (n_h2,n_h)
+W3_shape = (n_y,n_h2)
 
 def get_weights_from_encoded(individual):
     W1 = individual[0:W1_shape[0] * W1_shape[1]]
