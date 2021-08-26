@@ -66,17 +66,42 @@ class Snake:
     def observe(self):
         # Observe what is happening in each of the 8 directions from the snake
         # For each of the 8 directions, find out the distance between the snake and the food, wall, and body
-        for x_dir in range(-1, 2):
-            for y_dir in range(-1, 2):
-                self.observe_direction(x_dir, y_dir)
+        # for x_dir in range(-1, 2):
+        #     for y_dir in range(-1, 2):
+        #         self.observe_direction(x_dir, y_dir)
 
-        return False
+        return self.observe_direction(1, 0)
 
     def observe_direction(self, x_dir, y_dir):
-        dist = 0
-        for x in range(self.x, ):
-            for y in range():
-                continue
+        x_bounds = 0 if x_dir < 0 else grid_width - 1
+        y_bounds = 0 if y_dir < 0 else grid_height - 1
+        x = self.x
+        y = self.y
+
+        dist_covered = 0
+        dist_food = -1
+        dist_wall = -1
+        dist_body = -1
+
+        body_hit = False
+
+        while x != x_bounds and y != y_bounds:
+            x += x_dir
+            y += y_dir
+            dist_covered += 1
+
+            if x == food.x and y == food.y:
+                dist_food = dist_covered
+            if x == x_bounds or y == y_bounds:
+                dist_wall = dist_covered
+            if not body_hit:
+                for segment in self.snake_list[:-1]:
+                    if (segment.left - 1) / 10 == self.x and (segment.top - 1) / 10 == self.y:
+                        dist_body = dist_covered
+                        body_hit = True
+                        break
+
+        return (dist_food, dist_wall, dist_body)
 
 class Food:
     def __init__(self, grid_width, grid_height):
@@ -131,7 +156,8 @@ while running:
                 running = False
 
     directions = ["left", "right", "up", "down"]
-    player.change_directions(directions[random.randint(0, 3)])
+    # player.change_directions(directions[random.randint(0, 3)])
+    player.change_directions("right")
 
     player.move()
 
@@ -143,6 +169,8 @@ while running:
     player.draw()
     food.draw()
     pygame.display.update()
+
+    print(player.observe())
 else:
     print("You lose! Your snake's length was " + str(len(player.snake_list)))
 
