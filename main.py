@@ -2,6 +2,12 @@ import pygame
 import os
 import random
 import tensorflow as tf
+import tflearn
+from tflearn.layers.core import input_data, dropout, fully_connected
+from tflearn.layers.estimator import regression
+from statistics import median, mean
+from collections import Counter
+import numpy as np
 
 class Snake:
     def __init__(self, x, y):
@@ -12,6 +18,8 @@ class Snake:
         self.snake_list = list()
         self.snake_list.append(pygame.Rect(self.x * 10 + 1, self.y * 10 + 1, self.width, self.height))
         self.state = "none"
+
+        self.points = 0
 
     def change_directions(self, state):
         if (self.state == "left" and state == "right") or (self.state == "right" and state == "left") or (self.state == "up" and state == "down") or (self.state == "down" and state == "up"):
@@ -32,7 +40,10 @@ class Snake:
 
         self.snake_list.append(pygame.Rect(self.x * 10 + 1, self.y * 10 + 1, self.width, self.height))
 
+        self.points += 1
+
         if self.eat(food):
+            self.points += 10
             food.relocate()
             return
 
@@ -49,9 +60,13 @@ class Snake:
             pygame.draw.rect(screen, (77, 237, 48), segment)
 
     def dead(self):
+        punishment = 17
+
         if self.x < 0 or self.x >= grid_width or self.y < 0 or self.y >= grid_height:
+            self.points -= punishment
             return True
         elif self.collide_body():
+            self.points -= punishment
             return True
         else:
             return False
@@ -66,11 +81,15 @@ class Snake:
     def observe(self):
         # Observe what is happening in each of the 8 directions from the snake
         # For each of the 8 directions, find out the distance between the snake and the food, wall, and body
-        # for x_dir in range(-1, 2):
-        #     for y_dir in range(-1, 2):
-        #         self.observe_direction(x_dir, y_dir)
+        observations = list()
 
-        return self.observe_direction(1, 0)
+        for x_dir in range(-1, 2):
+            for y_dir in range(-1, 2):
+                if x_dir == 0 and y_dir == 0:
+                    continue
+                observations.append(self.observe_direction(x_dir, y_dir))
+
+        return observations
 
     def observe_direction(self, x_dir, y_dir):
         x_bounds = 0 if x_dir < 0 else grid_width - 1
@@ -79,9 +98,7 @@ class Snake:
         y = self.y
 
         dist_covered = 0
-        dist_food = -1
-        dist_wall = -1
-        dist_body = -1
+        (dist_food, dist_wall, dist_body) = (-1, -1, -1)
 
         body_hit = False
 
@@ -156,8 +173,8 @@ while running:
                 running = False
 
     directions = ["left", "right", "up", "down"]
-    # player.change_directions(directions[random.randint(0, 3)])
-    player.change_directions("right")
+    player.change_directions(directions[random.randint(0, 3)])
+    # player.change_directions("right")
 
     player.move()
 
