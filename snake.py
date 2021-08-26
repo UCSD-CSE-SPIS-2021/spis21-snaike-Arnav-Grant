@@ -1,13 +1,8 @@
 import pygame
 import os
 import random
-import tensorflow as tf
-import tflearn
-from tflearn.layers.core import input_data, dropout, fully_connected
-from tflearn.layers.estimator import regression
-from statistics import median, mean
-from collections import Counter
 import numpy as np
+from feed_forward_neural_network import *
 
 class Snake:
     def __init__(self, x, y, food):
@@ -43,10 +38,8 @@ class Snake:
 
         self.snake_list.append(pygame.Rect(self.x * 10 + 1, self.y * 10 + 1, self.width, self.height))
 
-        self.points += 1
-
         if self.eat():
-            self.points += 100
+            self.points += 500
             self.food.relocate()
             return
 
@@ -63,7 +56,7 @@ class Snake:
             pygame.draw.rect(screen, (77, 237, 48), segment)
 
     def dead(self):
-        punishment = 150
+        punishment = 500
 
         if self.x < 0 or self.x >= grid_width or self.y < 0 or self.y >= grid_height:
             self.points -= punishment
@@ -172,6 +165,55 @@ def play_game(snake):
         print(snake.observe())
     else:
         print("You lose! Your snake's length was " + str(len(snake.snake_list)))
+
+def display_game_with_GA(weights):
+    f = Food(grid_width, grid_height)
+    f.relocate()
+
+    player = Snake(random.randint(0, grid_width - 1), random.randint(0, grid_height - 1), f)
+
+    max_steps = 2500
+    for i in range(max_steps):
+        clock.tick(FPS)
+        # player.change_directions(random.randint(0, 3))
+        predicted_direction = np.argmax(np.array(forward_propagation(np.array(player.observe()).reshape(-1, n_x), weights)))
+        player.change_directions(predicted_direction)
+
+        player.move()
+
+        if player.dead():
+            break
+
+        pygame.draw.rect(screen, (0, 0, 0), background)
+        player.draw()
+        player.food.draw()
+        pygame.display.update()
+
+    return player.points
+
+def run_game_with_GA(weights):
+    f = Food(grid_width, grid_height)
+    f.relocate()
+
+    player = Snake(random.randint(0, grid_width - 1), random.randint(0, grid_height - 1), f)
+
+    max_steps = 2500
+    for i in range(max_steps):
+        # player.change_directions(random.randint(0, 3))
+        predicted_direction = np.argmax(np.array(forward_propagation(np.array(player.observe()).reshape(-1, n_x), weights)))
+        player.change_directions(predicted_direction)
+
+        player.move()
+
+        if player.dead():
+            break
+
+        pygame.draw.rect(screen, (0, 0, 0), background)
+        player.draw()
+        player.food.draw()
+        pygame.display.update()
+
+    return player.points
 
 # These are the dimensions of the background image for our game
 (grid_width, grid_height) = (50, 50)
