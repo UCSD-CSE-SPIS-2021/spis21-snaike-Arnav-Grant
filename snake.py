@@ -43,8 +43,8 @@ class Snake:
         food_direction = [i for i, x in enumerate(self.observe()) if x > 0]
         if len(food_direction) > 0:
             index = food_direction[0]
-            reward = 50
-            punishment = 150
+            reward = 100
+            punishment = 300
             if index in [0, 1, 2] and self.state == 2:
                 self.points += reward
             elif index in [2, 4, 7] and self.state == 1:
@@ -293,7 +293,8 @@ def test_game():
         player.food.draw()
         pygame.display.update()
 
-        print(player.observe())
+        # print(player.observe())
+        print(player.points)
     else:
         print("You lose! Your snake's length was " + str(len(player.snake_list)))
 

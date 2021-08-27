@@ -1,3 +1,6 @@
+# Shamelessly stolen from the following link:
+# https://github.com/TheAILearner/Training-Snake-Game-With-Genetic-Algorithm/blob/master/Feed_Forward_Neural_Network.py
+
 import random
 from snake import *
 from feed_forward_neural_network import *
