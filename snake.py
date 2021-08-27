@@ -37,9 +37,10 @@ class Snake:
             return
 
         self.snake_list.append(pygame.Rect(self.x * 10 + 1, self.y * 10 + 1, self.width, self.height))
+        self.points -= 1
 
         if self.eat():
-            self.points += 500
+            self.points += 20000
             self.food.relocate()
             return
 
@@ -56,7 +57,7 @@ class Snake:
             pygame.draw.rect(screen, (77, 237, 48), segment)
 
     def dead(self):
-        punishment = 500
+        punishment = 5000
 
         if self.x < 0 or self.x >= grid_width or self.y < 0 or self.y >= grid_height:
             self.points -= punishment
@@ -114,7 +115,9 @@ class Snake:
                         body_hit = True
                         break
 
-        return [dist_food, dist_wall, dist_body]
+        dist_obstacle = dist_wall if dist_body < 0 else min(dist_body, dist_wall)
+
+        return [dist_food, dist_obstacle]
 
 class Food:
     def __init__(self, grid_width, grid_height):
@@ -173,8 +176,23 @@ def display_game_with_GA(weights):
     player = Snake(random.randint(0, grid_width - 1), random.randint(0, grid_height - 1), f)
 
     max_steps = 2500
+    running = True
     for i in range(max_steps):
+        pygame.event.get()
         clock.tick(FPS)
+
+        for event in pygame.event.get():
+        # If you press the x button on the top right, quit the game
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.KEYDOWN:
+            # If you press the q key, quit the game
+                if event.key == pygame.K_q:
+                    running = False
+
+        if not running:
+            break
+
         # player.change_directions(random.randint(0, 3))
         predicted_direction = np.argmax(np.array(forward_propagation(np.array(player.observe()).reshape(-1, n_x), weights)))
         player.change_directions(predicted_direction)
@@ -199,6 +217,7 @@ def run_game_with_GA(weights):
 
     max_steps = 2500
     for i in range(max_steps):
+        pygame.event.get()
         # player.change_directions(random.randint(0, 3))
         predicted_direction = np.argmax(np.array(forward_propagation(np.array(player.observe()).reshape(-1, n_x), weights)))
         player.change_directions(predicted_direction)
@@ -208,15 +227,15 @@ def run_game_with_GA(weights):
         if player.dead():
             break
 
-        pygame.draw.rect(screen, (0, 0, 0), background)
-        player.draw()
-        player.food.draw()
-        pygame.display.update()
+        # pygame.draw.rect(screen, (0, 0, 0), background)
+        # player.draw()
+        # player.food.draw()
+        # pygame.display.update()
 
     return player.points
 
 # These are the dimensions of the background image for our game
-(grid_width, grid_height) = (50, 50)
+(grid_width, grid_height) = (30, 30)
 screen_length = grid_width * 10 + 1
 screen_height = grid_height * 10 + 1
 dim_field = (screen_length, screen_height)
@@ -224,7 +243,7 @@ screen = pygame.display.set_mode(dim_field)
 
 background = pygame.Rect(0, 0, screen_length, screen_height)
 
-FPS = 10
+FPS = 60
 
 # Game loop
 clock = pygame.time.Clock()

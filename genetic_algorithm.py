@@ -35,7 +35,8 @@ def crossover(parents, offspring_size):
     # For however many offspring you want (usually population size - parent size)
     for k in range(offspring_size[0]):
         # Continue until break
-        while True:
+        (parent1_index, parent2_index) = (0, 0)
+        while parent1_index == parent2_index:
             # randomly choose 2 parents
             parent1_index = random.randint(0, parents.shape[0] - 1)
             parent2_index = random.randint(0, parents.shape[0] - 1)
@@ -48,7 +49,6 @@ def crossover(parents, offspring_size):
                         offspring[k, j] = parents[parent1_index, j]
                     else:
                         offspring[k, j] = parents[parent2_index, j]
-                break
             # if 2 parents are the same, keep on choosing
     return offspring
 
