@@ -1,5 +1,5 @@
 # Shamelessly stolen from the following link:
-# https://github.com/TheAILearner/Training-Snake-Game-With-Genetic-Algorithm/blob/master/Feed_Forward_Neural_Network.py
+# https://github.com/TheAILearner/Training-Snake-Game-With-Genetic-Algorithm/blob/master/Genetic_Algorithm.py
 
 import random
 from snake import *

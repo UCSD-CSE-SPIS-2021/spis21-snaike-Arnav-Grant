@@ -43,15 +43,15 @@ class Snake:
         food_direction = [i for i, x in enumerate(self.observe()) if x > 0]
         if len(food_direction) > 0:
             index = food_direction[0]
-            reward = 100
-            punishment = 300
-            if index in [0, 1, 2] and self.state == 2:
+            reward = 10
+            punishment = 30
+            if index in [2, 4, 7] and self.state == 3: # up
                 self.points += reward
-            elif index in [2, 4, 7] and self.state == 1:
+            elif index in [0, 1, 2] and self.state == 0: # right
                 self.points += reward
-            elif index in [5, 6, 7] and self.state == 3:
+            elif index in [0, 3, 5] and self.state == 2: # down
                 self.points += reward
-            elif index in [0, 3, 5] and self.state == 0:
+            elif index in [5, 6, 7] and self.state == 1: # left
                 self.points += reward
             else:
                 self.points -= punishment
@@ -60,7 +60,7 @@ class Snake:
         # if food is in sight and he moved away from it, deduct points
 
         if self.eat():
-            self.points += 2000
+            self.points += 3000
             self.food.relocate()
             return
 
@@ -77,7 +77,7 @@ class Snake:
             pygame.draw.rect(screen, (77, 237, 48), segment)
 
     def dead(self):
-        punishment = 5000
+        punishment = 6000
 
         if self.x < 0 or self.x >= grid_width or self.y < 0 or self.y >= grid_height:
             self.points -= punishment
@@ -299,7 +299,7 @@ def test_game():
         print("You lose! Your snake's length was " + str(len(player.snake_list)))
 
 # These are the dimensions of the background image for our game
-(grid_width, grid_height) = (30, 30)
+(grid_width, grid_height) = (20, 20)
 screen_length = grid_width * 10 + 1
 screen_height = grid_height * 10 + 1
 dim_field = (screen_length, screen_height)
