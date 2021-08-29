@@ -2,18 +2,19 @@ from tqdm import tqdm
 import numpy as np
 from genetic_algorithm import *
 
-n_x = 441
-n_h = 200
+n_x = 10
+n_h = 9
+n_h2 = 15
 n_y = 4
 
 sol_per_pop = 100
-num_weights = n_x * n_h + n_h * n_y
+num_weights = n_x * n_h + n_h * n_h2 + n_h2 * n_y
 
 pop_size = (sol_per_pop, num_weights)
 # creating a population from scratch
 new_population = np.random.choice(np.arange(-1, 1, step = 0.01), size = pop_size, replace = True)
 # using old weights
-original = np.load('weights.npy')
+original = np.load('weights_10_inputs.npy')
 clones = np.empty((pop_size[0] - 1, pop_size[1]))
 for i in range(clones.shape[0]):
     clones[i, :] = original
@@ -23,7 +24,7 @@ new_population[1: , :] = modified_original
 
 num_parents = 12
 
-generations = 100
+generations = 1000
 
 # for gen in tqdm(range(generations)):
 #     fitness = cal_pop_fitness(new_population)
@@ -34,21 +35,15 @@ generations = 100
 #     new_population[0:parents.shape[0], :] = parents
 #     new_population[parents.shape[0]:, :] = offspring_mutation
 #
-#     if gen % 5 == 0 or gen == generations - 1:
-#         # f = open("best_weights.txt", "w")
-#         best_index = np.where(fitness == np.max(fitness))
-#         best_index = best_index[0][0]
-#         # f.write(str(new_population[best_index]))
-#         np.save('weights.npy', new_population[best_index])
-#
-#         # f = open("best_weights.txt", "r")
-#         # x = f.read()
-#         # x = x.replace("\n", " ").replace("[", "").replace("]", "")
-#         # li = x.split()
-#         # weights = [float(s) for s in li]
-#         weights = np.load('weights.npy')
-#         display_game_with_GA(weights)
+#     best_index = np.where(fitness == np.max(fitness))
+#     best_index = best_index[0][0]
+#     np.save('weights_10_inputs.npy', new_population[best_index])
+#     # weights = np.load('weights.npy')
+#     # display_game_with_GA(weights)
 
 
-weights = np.load('weights.npy')
+weights = np.load('weights_10_inputs.npy')
 display_game_with_GA(weights)
+
+
+# test_game()

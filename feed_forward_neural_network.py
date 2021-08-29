@@ -3,8 +3,9 @@
 
 import numpy as np
 
-n_x = 441
-n_h = 200
+n_x = 10
+n_h = 9
+n_h2 = 15
 n_y = 4
 W1_shape = (n_h,n_x)
 W2_shape = (n_y,n_h)

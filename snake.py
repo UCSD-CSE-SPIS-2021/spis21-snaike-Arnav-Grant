@@ -11,7 +11,9 @@ class Snake:
         self.width = 9
         self.height = 9
         self.snake_list = list()
-        self.snake_list.append((self.x, self.y))
+        self.snake_list.append(pygame.Rect(self.x * 10 + 1, self.y * 10 + 1, self.width, self.height))
+        self.snake_list.append(pygame.Rect((self.x + 1) * 10 + 1, (self.y) * 10 + 1, self.width, self.height))
+        self.snake_list.append(pygame.Rect((self.x + 1) * 10 + 1, (self.y + 1) * 10 + 1, self.width, self.height))
         self.state = "none"
         self.food = food
 
@@ -29,6 +31,23 @@ class Snake:
         self.state = state
 
     def move(self):
+        # check if food is in sight
+        food_direction = [i for i, x in enumerate(self.observe_all_directions()) if x > 0]
+        if len(food_direction) > 0:
+            index = food_direction[0]
+            reward = 0
+            punishment = 5
+            if index in [2, 4, 7] and self.state == 3: # up
+                self.points += reward
+            elif index in [0, 1, 2] and self.state == 0: # right
+                self.points += reward
+            elif index in [0, 3, 5] and self.state == 2: # down
+                self.points += reward
+            elif index in [5, 6, 7] and self.state == 1: # left
+                self.points += reward
+            else:
+                self.points -= punishment
+
         if self.state == 0:
             self.x -= 1
         elif self.state == 1:
@@ -37,36 +56,14 @@ class Snake:
             self.y -= 1
         elif self.state == 3:
             self.y += 1
-        elif self.state > 3:
-            self.points -= 1000
+        else:
             return
 
-        # self.snake_list.append(pygame.Rect(self.x * 10 + 1, self.y * 10 + 1, self.width, self.height))
         self.snake_list.append((self.x, self.y))
-        self.points += 1
-
-        self.generate_map()
-
-        # check if food is in sight
-        # food_direction = [i for i, x in enumerate(self.observe()) if x > 0]
-        # if len(food_direction) > 0:
-        #     index = food_direction[0]
-        #     reward = 10
-        #     punishment = 30
-        #     if index in [2, 4, 7] and self.state == 3: # up
-        #         self.points += reward
-        #     elif index in [0, 1, 2] and self.state == 0: # right
-        #         self.points += reward
-        #     elif index in [0, 3, 5] and self.state == 2: # down
-        #         self.points += reward
-        #     elif index in [5, 6, 7] and self.state == 1: # left
-        #         self.points += reward
-        #     else:
-        #         self.points -= punishment
 
         if self.eat():
-            self.points += 3000
-            self.food.relocate(snake_list)
+            self.points += 1000
+            self.food.relocate(self.snake_list)
             return
 
         self.snake_list.pop(0)
@@ -107,7 +104,7 @@ class Snake:
             pygame.draw.rect(screen, (77, 237, 48), pygame.Rect(segment[0] * 10 + 1, segment[1] * 10 + 1, self.width, self.height))
 
     def dead(self):
-        punishment = 7000
+        punishment = 900
 
         if self.x < 0 or self.x >= grid_width or self.y < 0 or self.y >= grid_height:
             self.points -= punishment
@@ -125,90 +122,69 @@ class Snake:
 
         return False
 
-    # def move(self):
-    #     if self.state == 0:
-    #         self.x -= 1
-    #     elif self.state == 1:
-    #         self.x += 1
-    #     elif self.state == 2:
-    #         self.y -= 1
-    #     elif self.state == 3:
-    #         self.y += 1
-    #     else:
-    #         return
-    #
-    #     self.snake_list.append(pygame.Rect(self.x * 10 + 1, self.y * 10 + 1, self.width, self.height))
-    #     # self.points -= 1
-    #
-    #
-    #
-    #     # check if food is in sight
-    #     food_direction = [i for i, x in enumerate(self.observe()) if x > 0]
-    #     if len(food_direction) > 0:
-    #         index = food_direction[0]
-    #         reward = 10
-    #         punishment = 30
-    #         if index in [2, 4, 7] and self.state == 3: # up
-    #             self.points += reward
-    #         elif index in [0, 1, 2] and self.state == 0: # right
-    #             self.points += reward
-    #         elif index in [0, 3, 5] and self.state == 2: # down
-    #             self.points += reward
-    #         elif index in [5, 6, 7] and self.state == 1: # left
-    #             self.points += reward
-    #         else:
-    #             self.points -= punishment
-    #
-    #     if self.eat():
-    #         self.points += 3000
-    #         self.food.relocate()
-    #         return
-    #
-    #     self.snake_list.pop(0)
+    def observe(self):
+        return self.observe_all_directions() + self.apple_direction()
 
-    # def observe(self):
-    #     # Observe what is happening in each of the 8 directions from the snake
-    #     # For each of the 8 directions, find out the distance between the snake and the food, wall, and body
-    #     observations = list()
-    #
-    #     for x_dir in range(-1, 2):
-    #         for y_dir in range(-1, 2):
-    #             if x_dir == 0 and y_dir == 0:
-    #                 continue
-    #             observations += self.observe_direction(x_dir, y_dir)
-    #
-    #     return observations
-    #
-    # def observe_direction(self, x_dir, y_dir):
-    #     x_bounds = -1 if x_dir < 0 else grid_width
-    #     y_bounds = -1 if y_dir < 0 else grid_height
-    #     x = self.x
-    #     y = self.y
-    #
-    #     dist_covered = 0
-    #     (dist_food, dist_wall, dist_body) = (-1, -1, -1)
-    #
-    #     body_hit = False
-    #
-    #     while x != x_bounds and y != y_bounds:
-    #         x += x_dir
-    #         y += y_dir
-    #         dist_covered += 1
-    #
-    #         if x == self.food.x and y == self.food.y:
-    #             dist_food = dist_covered
-    #         if x == x_bounds or y == y_bounds:
-    #             dist_wall = dist_covered
-    #         if not body_hit:
-    #             for segment in self.snake_list[:-1]:
-    #                 if segment[0] == self.x and segment[1] == self.y:
-    #                     dist_body = dist_covered
-    #                     body_hit = True
-    #                     break
-    #
-    #     dist_obstacle = dist_wall if dist_body < 0 else min(dist_body, dist_wall)
-    #
-    #     return [dist_food if dist_food < dist_obstacle and dist_food > 0 else -dist_obstacle]
+    def observe_all_directions(self):
+        # Observe what is happening in each of the 8 directions from the snake
+        # For each of the 8 directions, find out the distance between the snake and the food, wall, and body
+        observations = list()
+
+        for x_dir in range(-1, 2):
+            for y_dir in range(-1, 2):
+                if x_dir == 0 and y_dir == 0:
+                    continue
+                observations += self.observe_direction(x_dir, y_dir)
+
+        return observations
+
+    def observe_direction(self, x_dir, y_dir):
+        x_bounds = -1 if x_dir < 0 else grid_width
+        y_bounds = -1 if y_dir < 0 else grid_height
+        x = self.x
+        y = self.y
+
+        dist_covered = 0
+        (dist_food, dist_wall, dist_body) = (-1, -1, -1)
+
+        body_hit = False
+
+        while x != x_bounds and y != y_bounds:
+            x += x_dir
+            y += y_dir
+            dist_covered += 1
+
+            if x == self.food.x and y == self.food.y:
+                dist_food = dist_covered
+            if x == x_bounds or y == y_bounds:
+                dist_wall = dist_covered
+            if not body_hit:
+                for segment in self.snake_list[:-1]:
+                    if segment[0] == self.x and segment[1] == self.y:
+                        dist_body = dist_covered
+                        body_hit = True
+                        break
+
+        dist_obstacle = dist_wall if dist_body < 0 else min(dist_body, dist_wall)
+
+        return [dist_food if dist_food < dist_obstacle and dist_food > 0 else -dist_obstacle]
+
+    def apple_direction(self):
+        vector = list()
+        x_diff = self.food.x - self.x
+        y_diff = self.food.y - self.y
+
+        if x_diff != 0:
+            vector.append(int(abs(x_diff) / x_diff))
+        else:
+            vector.append(0)
+
+        if y_diff != 0:
+            vector.append(int(abs(y_diff) / y_diff))
+        else:
+            vector.append(0)
+
+        return vector
 
 class Food:
     def __init__(self, grid_width, grid_height):
@@ -233,9 +209,9 @@ class Food:
 def display_game_with_GA(weights):
     f = Food(grid_width, grid_height)
 
-    player = Snake(random.randint(0, grid_width - 1), random.randint(0, grid_height - 1), f)
+    player = Snake(random.randint(1, grid_width - 2), random.randint(1, grid_height - 2), f)
 
-    max_steps = 2500
+    max_steps = 3000
     running = True
     for i in range(max_steps):
         pygame.event.get()
@@ -255,6 +231,8 @@ def display_game_with_GA(weights):
 
         # player.change_directions(random.randint(0, 3))
         predicted_direction = np.argmax(np.array(forward_propagation(np.array(player.observe()).reshape(-1, n_x), weights)))
+        print(np.array(forward_propagation(np.array(player.observe()).reshape(-1, n_x), weights)))
+        print(predicted_direction)
         player.change_directions(predicted_direction)
 
         player.move()
@@ -272,9 +250,9 @@ def display_game_with_GA(weights):
 def run_game_with_GA(weights):
     f = Food(grid_width, grid_height)
 
-    player = Snake(random.randint(0, grid_width - 1), random.randint(0, grid_height - 1), f)
+    player = Snake(random.randint(1, grid_width - 2), random.randint(1, grid_height - 2), f)
 
-    max_steps = 2500
+    max_steps = 3000
     for i in range(max_steps):
         pygame.event.get()
         # player.change_directions(random.randint(0, 3))
@@ -286,17 +264,17 @@ def run_game_with_GA(weights):
         if player.dead():
             break
 
-        # pygame.draw.rect(screen, (0, 0, 0), background)
-        # player.draw()
-        # player.food.draw()
-        # pygame.display.update()
+        pygame.draw.rect(screen, (0, 0, 0), background)
+        player.draw()
+        player.food.draw()
+        pygame.display.update()
 
     return player.points
 
 def test_game():
     f = Food(grid_width, grid_height)
 
-    player = Snake(random.randint(0, grid_width - 1), random.randint(0, grid_height - 1), f)
+    player = Snake(random.randint(1, grid_width - 2), random.randint(1, grid_height - 2), f)
 
     running = True
     while running:
@@ -332,6 +310,9 @@ def test_game():
         player.draw()
         player.food.draw()
         pygame.display.update()
+
+        # print(player.observe())
+        print(player.observe())
     else:
         print("You lose! Your snake's length was " + str(len(player.snake_list)))
 
