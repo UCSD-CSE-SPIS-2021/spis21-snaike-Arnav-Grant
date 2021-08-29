@@ -16,6 +16,8 @@ def cal_pop_fitness(pop):
         fit = run_game_with_GA(pop[i])
         # add the fitness to the list with all the fitnesses
         fitness.append(fit)
+    print("Largest Fitness:", np.max(fitness))
+    print("Average Fitness:", np.mean(fitness))
     return np.array(fitness)
 
 def select_mating_pool(pop, fitness, num_parents):

@@ -3,7 +3,7 @@
 
 import numpy as np
 
-n_x = 8
+n_x = 10
 n_h = 9
 n_h2 = 15
 n_y = 4
