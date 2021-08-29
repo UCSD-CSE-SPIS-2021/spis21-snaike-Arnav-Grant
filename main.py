@@ -14,7 +14,7 @@ pop_size = (sol_per_pop, num_weights)
 # creating a population from scratch
 new_population = np.random.choice(np.arange(-1, 1, step = 0.01), size = pop_size, replace = True)
 # using old weights
-original = np.load('weights.npy')
+original = np.load('weights_10_inputs.npy')
 clones = np.empty((pop_size[0] - 1, pop_size[1]))
 for i in range(clones.shape[0]):
     clones[i, :] = original
@@ -26,23 +26,23 @@ num_parents = 12
 
 generations = 1000
 
-for gen in tqdm(range(generations)):
-    fitness = cal_pop_fitness(new_population)
-    parents = select_mating_pool(new_population, fitness, num_parents)
-    offspring_crossover = crossover(parents, offspring_size = (pop_size[0] - parents.shape[0], num_weights))
-    offspring_mutation = mutation(offspring_crossover)
+# for gen in tqdm(range(generations)):
+#     fitness = cal_pop_fitness(new_population)
+#     parents = select_mating_pool(new_population, fitness, num_parents)
+#     offspring_crossover = crossover(parents, offspring_size = (pop_size[0] - parents.shape[0], num_weights))
+#     offspring_mutation = mutation(offspring_crossover)
+#
+#     new_population[0:parents.shape[0], :] = parents
+#     new_population[parents.shape[0]:, :] = offspring_mutation
+#
+#     best_index = np.where(fitness == np.max(fitness))
+#     best_index = best_index[0][0]
+#     np.save('weights_10_inputs.npy', new_population[best_index])
+#     # weights = np.load('weights.npy')
+#     # display_game_with_GA(weights)
 
-    new_population[0:parents.shape[0], :] = parents
-    new_population[parents.shape[0]:, :] = offspring_mutation
 
-    best_index = np.where(fitness == np.max(fitness))
-    best_index = best_index[0][0]
-    np.save('weights.npy', new_population[best_index])
-    # weights = np.load('weights.npy')
-    # display_game_with_GA(weights)
-
-
-weights = np.load('weights.npy')
+weights = np.load('weights_10_inputs.npy')
 display_game_with_GA(weights)
 
 

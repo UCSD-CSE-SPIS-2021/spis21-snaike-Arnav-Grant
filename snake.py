@@ -202,6 +202,8 @@ def display_game_with_GA(weights):
 
         # player.change_directions(random.randint(0, 3))
         predicted_direction = np.argmax(np.array(forward_propagation(np.array(player.observe()).reshape(-1, n_x), weights)))
+        print(np.array(forward_propagation(np.array(player.observe()).reshape(-1, n_x), weights)))
+        print(predicted_direction)
         player.change_directions(predicted_direction)
 
         player.move()
