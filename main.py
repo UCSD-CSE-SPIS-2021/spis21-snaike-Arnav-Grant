@@ -14,7 +14,7 @@ pop_size = (sol_per_pop, num_weights)
 # creating a population from scratch
 new_population = np.random.choice(np.arange(-1, 1, step = 0.01), size = pop_size, replace = True)
 # using old weights
-original = np.load('weights_10_inputs.npy')
+original = np.load('weights_10a_inputs.npy')
 clones = np.empty((pop_size[0] - 1, pop_size[1]))
 for i in range(clones.shape[0]):
     clones[i, :] = original
@@ -37,13 +37,10 @@ generations = 1000
 #
 #     best_index = np.where(fitness == np.max(fitness))
 #     best_index = best_index[0][0]
-#     np.save('weights_10_inputs.npy', new_population[best_index])
-#     # weights = np.load('weights.npy')
-#     # display_game_with_GA(weights)
+#     np.save('weights_10a_inputs.npy', new_population[best_index])
 
 
-weights = np.load('weights_10_inputs.npy')
-display_game_with_GA(weights)
-
+weights = np.load('weights_10a_inputs.npy')
+display_game_with_GA(weights, 100)
 
 # test_game()
