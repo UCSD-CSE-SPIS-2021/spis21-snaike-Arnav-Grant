@@ -1,4 +1,4 @@
-# Shamelessly stolen from the following link:
+# Shamelessly stolen from the following link before slight modifications:
 # https://github.com/TheAILearner/Training-Snake-Game-With-Genetic-Algorithm/blob/master/Genetic_Algorithm.py
 
 import random
@@ -7,15 +7,15 @@ from feed_forward_neural_network import *
 import numpy as np
 from tqdm import tqdm
 
-def cal_pop_fitness(pop):
+def cal_pop_fitness(pop, size_per_game):
     # create a list of fitness for each snake
     fitness = []
     # iterate through all the snakes in the population
-    for i in range(pop.shape[0]):
+    for i in range(0, pop.shape[0], size_per_game):
         # run a simulation with the feed forward neural network and record the fitness
-        fit = run_game_with_GA(pop[i])
+        fit = run_game_with_GA(pop[i: i + size_per_game], size_per_game)
         # add the fitness to the list with all the fitnesses
-        fitness.append(fit)
+        fitness += fit
     print("Largest Fitness:", np.max(fitness))
     print("Average Fitness:", np.mean(fitness))
     return np.array(fitness)
