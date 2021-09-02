@@ -41,6 +41,6 @@ generations = 1000
 
 
 weights = np.load('weights_10a_inputs.npy')
-display_game_with_GA(weights, 100)
+display_game_with_GA(weights)
 
 # test_game()

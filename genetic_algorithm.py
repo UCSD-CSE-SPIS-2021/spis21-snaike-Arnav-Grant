@@ -2,7 +2,7 @@
 # https://github.com/TheAILearner/Training-Snake-Game-With-Genetic-Algorithm/blob/master/Genetic_Algorithm.py
 
 import random
-from snake_new import *
+from snake import *
 from feed_forward_neural_network import *
 import numpy as np
 from tqdm import tqdm
